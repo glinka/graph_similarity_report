@@ -31,20 +31,20 @@ d_{GED}(G_1, G_2) = \min\limits_{o \in \mathcal{O}} \sum\limits_{i} c(o_i)
 \label{eqn:ged}
 \end{align}
  
-This optimization problem is known to be, in general, exponential in the number of vertices involved; thus, many approximation algorithms have been proposed. An exact algorithm, based on an $A*$ search, creates a tree specifying possible edit paths. At each step, the search is continued along the node with the current minimum total cost, i.e. the cost of traversing the tree from root to the current node. An approximation, the $A* Beamsearch$ tracks only the $s$ most promising nodes are kept in the search path. An alternative approach to these $A*$-based algorithms is known as \textit{fuzzy edit distance}, where edit operations are not explicitly included or excluded but rather assigned some weight. This method begins by producing a matrix $\textbf{Q}^{n_1n_2 \times n_1n_2}$ where $n = |G|$. The rows and columns are indexed by vertex substitutions from $V_1$ to $V_2$; thus the diagonal entries, of the form $(u \rightarrow v, u \rightarrow v)$, correspond to the cost of substituting vertex $v (\in V_2)$ for $u (\in V_1)$. Then we must solve
+This optimization problem is known to be, in general, exponential in the number of vertices involved; thus, many approximation algorithms have been proposed. An exact algorithm, based on an $A^{*}$ search, creates a tree enumerating possible edit paths. At each step, the search is continued along the node with the current minimum total cost, i.e. the cost of traversing the tree from root to the current node. An approximation, the $A^{*} Beamsearch$ leaves only the $s$ most promising nodes in the search path. An alternative approach to these $A^{*}$-based algorithms is known as \textit{fuzzy edit distance}, where edit operations are not explicitly included or excluded but rather assigned some weight. This method begins by producing a matrix $\textbf{Q}^{n_1n_2 \times n_1n_2}$ where $n = |G|$. The rows and columns are indexed by vertex substitutions from $V_1$ to $V_2$; thus the diagonal entries, of the form $(u \rightarrow v, u \rightarrow v)$, correspond to the cost of substituting vertex $v \in V_2$ for $u \in V_1$. Then we must solve
 
 \begin{align}
 x_{fuzzy} = \min\limits_{x} x^T\textbf{Q}x
 \label{eqn:fuzzy}
 \end{align}
 
-This gives us a vector of weights $x$, which is then processed through some \textit{defuzzification} to yield the actual edit distance. 
+This gives us a vector of weights $x$, which is then processed through some \textit{defuzzification} to yield the actual edit path and distance. 
 
 There are still other formulations of edit cost algorithms. The popularity of this measure of similarity lies in its generality and robustness to errors. The cost functions can be defined to take into account information specific to a certain field, and indeed completely new edit operations can be created if desired.
 
 \subsection{Applications}
 
-This framework has been applied in a number of machine learning areas, including object recognition and video indexing \cite{edit distance refs}
+This framework has been applied in a number of machine learning areas, including object recognition and video indexing. %\cite{edit distance refs}
 
 \section{Graph kernels}
 \subsection{Graph kernel variations}
@@ -65,7 +65,8 @@ k(G_1, G_2) = \sum\limits_{k=1}^{\infty}\mu(k) q_\times^T W_\times^k p_\times
 \end{align}
 
 
-which can be simplified with the proper choice of $\mu(k)$, e.g. $\mu(k) = \frac{\lambda^k}{k!}$ leads to $k(G_1, G_2) = q_\times^T e^{W_\times \lambda} p_\times$. The power in this formulation is that $W_\times$ is defined very generally as $W_\times = \Phi(L_1)\otimes\Phi(L_2)$ where $\Phi()$, loosely speaking, takes an edge label and assigns it a value in $\mathbb{R}$, and $L$ is a matrix of edge labels. Thus, for simplicity, we could define $\Phi(L) = A$, yielding $W_\times = A_\times$. An extension to labeled graphs could be accomplished by the following redefinitions, given a set of edge labels $\mathcal{L} = {l_1,...,l_d}$
+in which $p_\times$ and $q_\times$ are starting and stopping probabilities, respectively. (\ref{eqn:gk}) can be simplified with the proper choice of $\mu(k)$, e.g. $\mu(k) = \frac{\lambda^k}{k!}$ leads to $k(G_1, G_2) = q_\times^T e^{W_\times \lambda} p_\times$. \\
+The power in this formulation is that $W_\times$ is defined very generally as $W_\times = \Phi(L_1)\otimes\Phi(L_2)$ where $\Phi()$, loosely speaking, takes an edge label and assigns it a value in $\mathbb{R}$, and $L$ is a matrix of edge labels. Thus, for simplicity, we could define $\Phi(L) = A$, yielding $W_\times = A_\times$. An extension to labeled graphs could be accomplished by the following definitions, given a set of edge labels $\mathcal{L} = {l_1,...,l_d}$
 
 \begin{equation}
 \Phi(L_{ij}) = \left \{
@@ -77,7 +78,8 @@ which can be simplified with the proper choice of $\mu(k)$, e.g. $\mu(k) = \frac
 \label{eqn:lgk} 
 \end{equation}
 
-This would result in $W_\times$ having nonzero entries only in which the corresponding edges exist in $G_\times$ and the labels are the same as those in the original graph. As these kernel computations often amount to some eigendecomposition, efficient algorithms for a number of cases have been presented.
+This would result in $W_\times$ having nonzero entries only when the corresponding edges exist in $G_\times$ and the labels are the same as those in the original graphs. \\
+As these kernel computations often amount to some eigendecomposition, efficient algorithms for a number of cases have been presented.
 
 \subsection{Applications}
 
@@ -85,7 +87,7 @@ Graph kernels have been applied to problems in chemical toxicity, protein functi
 
 \section{Graph embedding}
 
-This strategy maps each input graph to a vector in $\mathbb{R}^n$. Two possible approaches are to compare input graphs against a set of prototypes, or to count the occurences of a set of subgraphs in each input graph. In the first, given a set $\mathcal{P} = \{P_1,...,P_m\}$ of prototype graphs, each input $G$ is mapped via
+This strategy maps each input graph to a vector in $\mathbb{R}^m$. Two possible approaches are to compare input graphs against a set of prototypes, or to count the occurrences of a set of subgraphs in each input graph. In the first, given a set $\mathcal{P} = \{P_1,...,P_m\}$ of prototype graphs, each input $G$ is mapped via
 
 \begin{align}
 \Phi(G)=[d(G,P_1), d(G,P_2),...,d(G,P_m)]
@@ -97,11 +99,15 @@ where $d(G, P)$ is some distance function, often the graph edit distance. Altern
 \Phi(G)=[occ(G,S_1), occ(G,S_2),...,occ(G,S_m)]
 \end{align}
 
-where $occ(G, S)$ denotes the number of occurences of subgraph $S$ in the input graph $G$. The strength of embedding methods lies in their easy use in tandem with existing data mining techniques, as the output is a vector in $\mathbb{R}^n$.
+where $occ(G, S)$ denotes the number of occurences of subgraph $S$ in the input graph $G$. The strength of embedding methods lies in their easy incorporation into existing data mining techniques, as the output is a vector in $\mathbb{R}^m$.
 
 \subsection{Applications}
 
 Graph embeddings have been used in conjunction with classical scaling techniques to embed the graphs (embed the embeddings) into a lower dimensional subspace.
+
+%% \section{Iterative methods}
+
+%% This class of techniques is based on an iterative update of similarities of nodes, and possibly edges, between two graphs. It was pioneered for identification of ``hubs'' and ``authorities'' in the internet. In brief, considering only vertex-based methods, we start with some initial distribution of 
 
 \bibliographystyle{abbrv}
 \bibliography{$HOME/Documents/bibTex/library/}
